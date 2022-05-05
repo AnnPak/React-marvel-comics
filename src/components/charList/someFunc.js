@@ -1,0 +1,8 @@
+export default function logger(){
+    console.log('test')
+}
+
+export function secondLog(){
+    console.log('2nd test')
+}
+
