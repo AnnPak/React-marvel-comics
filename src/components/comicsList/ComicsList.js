@@ -1,25 +1,46 @@
 import {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
 import useMarvelService from '../../services/MarvelService';
 
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+        case 'loading':
+            return newItemLoading ? <Component/> : <Spinner/>;
+        case 'error':
+            return <ErrorMessage/>;
+        case 'confirmed':
+            return <Component/>;
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
+
 const ComicsList = () => {
 
     const [comicsList, setComicsList] = useState([]);
+    const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
 
-    const {loading, error, getAllComics} = useMarvelService();
+    const {loading, error, getAllComics, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         return() => {
-            onRequest();
+            onRequest(offset, true);
         }
     }, [])
 
-    const onRequest = (offset) => {
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+
         getAllComics(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
 
@@ -50,8 +71,11 @@ const ComicsList = () => {
 
     return (
         <div className="comics__list">
-            {renderComics(comicsList)}
-            <button className="button button__main button__long">
+            {setContent(process, () => renderComics(comicsList), newItemLoading)}
+            <button 
+                disabled={newItemLoading} 
+                className="button button__main button__long"
+                onClick={() => onRequest(offset, false)}>
                 <div className="inner">load more</div>
             </button>
         </div>

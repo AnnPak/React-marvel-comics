@@ -1,20 +1,17 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
-import ComicView from './singleComicLayout/SingleComicLayout';
-import CharView from './singleCharacterLayout/SingleCharacterLayout';
+import setContent from '../../utils/setContent';
 
 import './singleComicPage.scss';
 
 
 const SinglePage = ({Component, typePage}) => {
     const { elemId } = useParams();
-    const [element, setElement] = useState(null);
+    const [data, setData] = useState(null);
 
-    const { loading, error, getComic, getCharacter, clearError } = useMarvelService();
+    const {getComic, getCharacter, clearError, process, setProcess } = useMarvelService();
 
     useEffect(() => {
         updateElem()
@@ -25,29 +22,25 @@ const SinglePage = ({Component, typePage}) => {
 
         switch(typePage){
             case 'comicPage':
-                getComic(elemId).then(onElementLoad);
-            case 'charPage':
-                getCharacter(elemId).then(onElementLoad);
-            default:
+                getComic(elemId).then(onElementLoad).then(() => setProcess('confirmed'));
                 break;
+            case 'charPage':
+                getCharacter(elemId).then(onElementLoad).then(() => setProcess('confirmed'));
+                break;
+            default:
+                throw new Error('Unexpected process state');
         }
 
     }
 
-    const onElementLoad = (element) => {
-        setElement(element);
+    const onElementLoad = (data) => {
+        setData(data);
     }
 
-    
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error || !element) ? <Component element={element}/> : null;
 
     return (
         <>
-            {errorMessage}
-            {spinner}
-            {content}
+            {setContent(process, Component, data)}
 
         </>
 

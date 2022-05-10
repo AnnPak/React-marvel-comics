@@ -1,18 +1,20 @@
 import AppBanner from '../../appBanner/AppBanner';
 import { Link } from 'react-router-dom';
 
-const SingleCharacterLayout = (({ element }) => {
-    const { name, description, thumbnail} = element;
+import './singleCharacterLayout.scss';
+
+const SingleCharacterLayout = (({ data }) => {
+    const { name, description, thumbnail} = data;
     return (
         <>
             <AppBanner />
-            <div className="single-element">
-                <img src={thumbnail} alt={name} className="single-comic__img" />
-                <div className="single-comic__info">
-                    <h2 className="single-comic__name">{name}</h2>
-                    <p className="single-comic__descr">{description}</p>
+            <div className="single-data">
+                <img src={thumbnail} alt={name} className="single-char__img" />
+                <div className="single-char__info">
+                    <h2 className="single-char__name">{name}</h2>
+                    <p className="single-char__descr">{description}</p>
                 </div>
-                <Link to="/" className="single-comic__back">Back to all</Link>
+                <Link to="/" className="single-char__back">Back to all</Link>
             </div>
         </>
 

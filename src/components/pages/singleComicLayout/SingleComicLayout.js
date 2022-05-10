@@ -1,8 +1,10 @@
 import AppBanner from '../../appBanner/AppBanner';
 import { Link } from 'react-router-dom';
 
-const SingleComicLayout = (({ element }) => {
-    const { title, description, pageCount, thumbnail, language, price } = element;
+import './singleComicLayout.scss';
+
+const SingleComicLayout = (({ data }) => {
+    const { title, description, pageCount, thumbnail, language, price } = data;
     return (
         <>
             <AppBanner />
